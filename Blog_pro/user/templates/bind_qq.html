@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load get_login_qq_url %}
+
+{% block title %}
+    我的网站|{{ title }}
+{% endblock %}
+
+{% block external %}
+    <link rel="stylesheet" href="{% static 'CSS/login.css' %}" >
+{% endblock %}
+
+{% block content %}
+    {# 每次进入该页面先进行判断，如果已登录则跳转到首页（因为如果在"登陆页面"进入"注册界面"注册完会跳转到登陆界面，所以进如登陆页面先进行判断） #}
+    {% if user.is_authenticated %}
+        <script>
+        	window.location.assign('/')
+        </script>
+    {% else %}
+    <div class="login_container">
+    	<p class="login_title">
+    		<span>{{ title }}</span>
+    	</p>
+        <div class="login_form">
+            <form action="" method="POST">
+                {% csrf_token %}
+                <div>
+                    {% for field in form %}
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        <p>{{ field.errors.0 }}</p>
+                    {% endfor %}
+                    <p class="login_error">{{ form.non_field_errors.0 }}</p>                    {# clean错误信息 #}
+                    <div class="Operating_button">
+                        <a href="{% url 'forget_Password' %}" class="forget_Password">忘记密码?</a>
+                        <button type="submit" class="login_submit">{{ button_str }}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+	{% endif %}
+{% endblock %}
+

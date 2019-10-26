@@ -1,0 +1,125 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+a{                                                          /* 设置所有a标签 */
+    text-decoration: none;
+    color: #000;
+}
+
+ul{
+	list-style-type: none;
+}
+
+/*----------------------------------------左边导航栏--------------------------------------------*/
+.my_blog_base_top{											/* 导航栏总容器 */
+	width: 100%;
+	height: 60px;
+	background-color: rgba(204, 204, 204, 0.45);
+	overflow: hidden;
+}
+
+
+.my_blog_base_one_link{										/* 导航栏左侧 */
+	overflow: hidden;
+	float: left;
+}
+
+.my_blog_base_one_link li{
+	float: left;
+}
+
+.my_blog_base_one_link .log{
+	line-height: 60px;
+	padding: 0 15px;
+}
+
+.my_blog_base_one_link a{
+	display: block;
+	line-height: 60px;
+	padding: 0 15px;
+}
+
+.my_blog_base_one_link a:hover{
+	background: rgba(204, 204, 204, 0.45);
+}
+
+
+/*----------------------------------------右边导航栏--------------------------------------------*/
+.my_blog_base_one_link_right{								/* 导航栏右侧 */
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+
+.my_blog_base_one_link_right>li{
+	float: right;
+	line-height: 60px;
+	text-align: center;
+	margin-right: 18px;
+}
+
+.second_level_content{										/* 有二级菜单的容器 */
+	width: 150px;
+}
+
+.second_level{
+	position: relative;
+	z-index: 1; 											/* 设置层级 */
+	display: none;
+	border: 2px solid rgba(204, 204, 204, 0.45);
+	background: #F5F5F5;
+}
+
+.second_level li{
+	line-height: 40px;		/*重写行高*/
+}
+
+.second_level li a{
+	display: block;			/*使a标签撑开li标签*/
+}
+
+.second_level li:last-child{
+	border-top: 3px solid rgba(204, 204, 204, 0.45);
+}
+
+.second_level li:hover{
+	background: rgba(204, 204, 204, 0.7);
+}
+
+/* 定义搜索框 */
+.web_seaech .seaech{
+	outline: none;
+	border: 1.5px solid #009bec;
+	padding: 11px 9px;
+}
+
+/* 定义搜索按钮 */
+.web_seaech button{
+	display: inline-block;
+	width: 30px;
+	height: 30px;
+	background-color: transparent;
+	background-image: url('../img/搜索.png');
+	background-size: cover; 
+	outline: none;
+	border-color: transparent;
+	transform: translate(-41px,10px);
+	cursor: pointer;
+}	
+
+/* 实时获取未读计数 */ 
+.ajax_get_count{
+	display: none;
+	width: 18px;
+	height: 18px;
+	color: #fff;
+	font-size: 14px: 
+	display: inline-block;
+	position: absolute;
+	line-height: 19px;
+	background: red;
+	border-radius: 50%;
+	transform: translate(5.3px,10.1px);
+}

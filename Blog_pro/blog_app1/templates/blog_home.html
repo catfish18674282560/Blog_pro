@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load comment_tags %}
+{% load likes_tags %}
+
+{% block title %}
+    博客主页
+{% endblock %}
+
+{% block external %}
+    <script src="{% static 'jQuery/jquery-3.3.1.min.js' %}"></script>     {# jQuery框架必须最先引入 #}
+	<link rel="stylesheet" href="{% static 'CSS/blog_home.css' %}" >
+    <script src="{% static 'JS/blog_home.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+{#------------------------------左侧所有博客，右侧博客分类-------------------------------------------#}
+    <div class="blog_home_content">
+        <div class="blog_home_content_left">
+        	<div class="blog_home_content_title">
+                <p>博客列表</p>
+            </div>
+            <div class="blog_home_content_container">
+                {% for blog in Blogs %}
+                    <a href="{% url 'blog_detail' blog.pk %}" title="查看博客详情">
+                        <h2>{{ blog.title }}</h2>
+                    </a>
+                    <div class="blog_home_content_container_text">
+						分类: <a href="type/{{ blog.blog_type.pk }}" class="text_a" title="博客分类">{{ blog.blog_type.type }}</a>
+                        <span>发表日期: {{ blog.creation_time|date:"Y-m-d" }}</span>
+                        <span>阅读:{{ blog.get_read_num }}</span>
+                        <span>评论数: ({% get_blog_comment blog %})</span>
+                        <span>赞({% get_like_count blog %})</span>
+                    </div>
+                {% empty %}
+                    <span style="display:inline-block;">目前没有文章，敬请期待</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="blog_home_content_right">
+            <div class="blog_home_content_title">
+                <p>博客分类</p>
+            </div>
+            <ul class="blog_home_content_right_ul">
+                {% for type in types %}
+                <li>
+                	<a href="{% url 'blog_type' type.pk %}">{{ type.type }}（{{ type.blog_count }}）</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+        <div class="blog_home_content_right">
+            <div class="blog_home_content_title">
+                <p>日期归档</p>
+            </div>
+            <ul class="blog_home_content_right_ul">
+{#                遍历字典所有项，blog_date表示所有的年月日对象， blog_date_count表示每个年月日对象所对应的长度 #}
+                {% for blog_date, blog_date_count in blog_dates.items %}
+                <li>
+                    <a href="{% url 'blog_date' blog_date.year blog_date.month blog_date.day %}">{{ blog_date|date:"Y年m月d日" }}（{{ blog_date_count }}）</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+
+{#-------------------------------分页器------------------------------------------#}
+    <div class="my_blog_pag">
+        <ul>
+			{# 判断是否有上一页#}
+	        {% if pages.has_previous %}
+	            <li><a href="?page={{ pages.previous_page_number }}"><<</a></li>
+	        {% else %}
+	            <li><span class="no_page"><<</span></li>
+	        {% endif %}
+	
+	    	{% for page in page_range %}
+	    		{% if page == pages.number %}
+	    			<li class="current_page" style="background:deepskyblue;"><span >{{ page }}</span></li>
+	    		{% elif page == "..." %}
+	    			<li class="current_page"><span>{{ page }}</span></li>
+	    		{% else %}
+	    			<li><a href="?page={{ page }}">{{ page }}</a></li>
+	    		{% endif %}
+	    	{% endfor %}
+	
+			{# 判断是否有下一页#}
+	        {% if pages.has_next %}
+	            <li><a href="?page={{ pages.next_page_number }}">>></a></li>
+	        {% else %}
+	            <li><span class="no_page">>></span></li>
+	        {% endif %}
+        </ul>
+    </div>
+    <div class="blog_page_details">
+        <p>
+          共{{ blogs.count }}篇博客，
+          当前第{{ pages.number }}页，
+          共{{ pages.paginator.num_pages }}页
+        </p>
+    </div>
+{% endblock %}

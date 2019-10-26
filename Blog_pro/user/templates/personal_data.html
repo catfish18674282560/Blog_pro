@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+
+{% block title %}个人详情{% endblock %}
+
+{% block external %}
+    <link rel="stylesheet" type="text/css" href="{% static 'CSS/personal_data.css' %}">
+{% endblock %}
+
+{% block content %}
+	{% if not user.is_authenticated %}
+		<script>
+            window.location.href = '/';
+        </script>
+	{% else %}
+    <div class="personal_data_content">
+        <div>
+            <div class="personal_data">
+                <div class="title_context">
+                    <h2>个人资料</h2>
+                </div>
+                <div class="head_personal_content">
+                    <div class="head_img_left">
+                        <img src="{{ img }}">
+                        <p><a href="javascript:;">修改头像</a></p>
+                    </div>
+                    <div class="personal_details_right">
+                        <ul>
+                            <li><p>用户名：{{ user.username }}<span><a href="{% url 'change_Password' %}">修改密码</a></span></p></li>
+                            <li><p>昵称：{{ user.nickName }}<a href="{% url 'change_NickName' %}?from={{ request.get_full_path }}">修改昵称</a></p></li>
+                            <li><p>邮箱：{{ user.email }}<a href="{% url 'change_Email' %}?from={{ request.get_full_path }}">绑定邮箱</a></p></li>
+                            <li><p>管理：{% if user.is_staff %}是{% else %}不是{% endif %}</p></li>
+                            <li><p>超管：{% if user.is_superuser %}是{% else %}不是{% endif %}</p></li>
+                            <li><p>注册时间：{{ user.date_joined|date:"Y-m-d H:i:s" }}</p></li>
+                            <li><p>上次登录时间：{{ user.last_login|date:"Y-m-d H:i:s" }}</p></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+{% endblock %}

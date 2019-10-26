@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+
+{% block external %}
+    <link rel="stylesheet" href="{% static 'CSS/login.css' %}" >
+{% endblock %}
+
+{% block content %}
+    {% if not user.is_authenticated %}
+        <script>
+            window.location.assign('/');
+        </script>
+    {% else %}
+        <div class="login_container">
+            <p class="login_title">
+                <span>{{ title }}</span>
+            </p>
+            <div class="login_form">
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <div>
+                        <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                        {{ form.email }}
+                        <p>{{ form.email.errors.0 }}</p>
+                        <label for="{{ form.verification.id_for_label }}">{{ form.verification.label }}</label>
+                        {{ form.verification }}
+                        <button id="get_verification" type="button">{{ get_verification }}</button>
+                        <p>{{ form.verification.errors.0 }}</p>
+                        <p class="login_error">{{ form.non_field_errors.0 }}</p>
+                        <div class="Operating_button">
+                            <button type="submit" class="login_submit">{{ button_str }}</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script>
+            document.getElementById('get_verification').onclick = function(){           // 为提交表单按钮绑定点击事件
+                var is_this = this;
+                document.getElementsByClassName('verification_code')[0].value = '';     // 点击"发送验证码"清空输入框内容
+                // 发送验证码按钮倒计时
+                function send_verification_code(){
+                    is_this.disabled = true;
+                    is_this.style.background = '#8e8e8e';
+                    var index = 30;
+                    var set = setInterval(function(){
+                        if (index <= 0){
+                            clearInterval(set);
+                            is_this.disabled = false;
+                            is_this.innerText = '发送验证码';
+                            is_this.style.background = '#1E90FF';
+                            return false;
+                        }
+                        is_this.innerText = index + 's';
+                        index --;
+                    },1000)
+                }
+
+                var email = document.getElementsByClassName('get_email')[0].value;  // 获取用户输入的邮箱
+                $.ajax({
+                    url: '{% url "send_Email" %}',
+                    type: 'GET',
+                    data: {
+                        'email': email,
+                        'code_type': 'change_Email_code'                            // 指定验证码作用
+                    },
+                    cache: false,
+                    success: function(data){
+                        if(data['status'] == '200'){
+	    			        console.log(data['success']);
+	                        send_verification_code();
+	                        document.getElementsByClassName('login_error')[0].style.color = '#00c001';
+                            document.getElementsByClassName('login_error')[0].innerText = data['success'];
+	                    }
+	    			    if(data['status'] == '500'){
+	    			        console.log(data['error']);
+	    			        document.getElementsByClassName('login_error')[0].innerText = data['error'];
+	                    }
+                    },
+                    error: function(xhr){
+                        console.log(xhr);
+                    }
+                });
+            }
+        </script>
+    {% endif %}
+{% endblock %}
+

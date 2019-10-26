@@ -1,0 +1,35 @@
+.my_notification_content{
+	width: 65%;
+	margin: 0px auto;
+}
+
+.notification_content{
+	margin-top: 100px; 
+}
+
+.notification_button{
+	display: inline-block;
+	padding: 5px;
+	background: #4c85ff;
+	border-radius: 20px;
+	margin-right: 20px;
+}
+
+.notification_content > ul{
+	margin-top: 30px; 
+}
+
+/*
+.notification_content > ul > li > a{
+	color: rgba(44,27,187,1);
+}
+*/
+
+/* 已读消息颜色 */
+.unread a{
+	color: #ccc;
+}
+
+.notification_content>ul a:hover{
+	text-decoration: underline;
+}

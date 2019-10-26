@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+    我的网站 | 站内搜索
+{% endblock %}
+
+{% block external %}
+	<link rel="stylesheet" href="{% static 'CSS/word_seaech.css' %}">
+{% endblock %}
+
+{% block content %}
+	<div class="word_context">
+		<div class="prompt_information">
+			{% if not seaech %}
+				<h3>空空如也！</h3>
+				<p>你可以尝试输入点什么东西，例如：Django</p>
+			{% else %}
+				<div class="word_blog_context">
+					<h3>搜索"{{ seaech }}"，找到{{ paginator.count }}个结果</h3>
+					<hr>
+					<ul class="word_blog_list">
+						{% for blog in page_list %}
+							<li>
+								<a href="{% url 'blog_detail' blog_pk=blog.pk %}">{{ blog.title }}</a>
+							</li>
+						{% empty %}
+							<li>空空如也</li>
+						{% endfor %}
+					</ul>
+				</div>
+				<div class="pager_container">
+					{% if page.has_next %}
+						<a href="{% url 'word_seaech' %}?word={{ seaech }}&page={{ page.next_page_number }}">下一页</a>
+					{% else %}
+						<a href="{% url 'word_seaech' %}?word={{ seaech }}&page={{ page.previous_page_number }}">上一页</a>
+					{% endif %}
+				</div>
+			{% endif %}
+		</div>
+	</div>
+    
+{% endblock %}

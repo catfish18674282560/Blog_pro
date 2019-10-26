@@ -1,0 +1,55 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+ul{
+    list-style-type: none;
+}
+
+.personal_data_content{
+    margin: 20px 16%;
+    padding: 0 30px 30px 30px;
+    border: 2px #ccc solid;
+}
+
+.personal_data_content a{
+    color: #2071ac;
+}
+
+.personal_data_content a:hover{
+    color: #3399ea;
+}
+
+.personal_data .title_context{
+    border-bottom: 1px #ccc solid;
+}
+
+.personal_data .title_context h2{
+    line-height: 70px;
+}
+
+.head_personal_content{                               /* 左边头像和右边个人详情总容器 */
+    font-size: 14px;
+    color: #4d4d4d;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+.head_personal_content .head_img_left{                /* 左边头像容器 */
+    float: left;
+    margin-right: 16px;
+    margin-top: 10px;
+}
+
+.head_personal_content .head_img_left img{
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 1px white solid;
+}
+
+.personal_details_right{                               /* 右边个人详情容器 */
+    float: left;
+    line-height: 32px;
+}

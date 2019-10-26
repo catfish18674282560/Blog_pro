@@ -1,0 +1,304 @@
+{% extends 'base.html' %}
+{% load staticfiles %}          {# 导入static静态文件 #}
+{% load comment_tags %}         {# 评论自定义模板标签 #}
+{% load likes_tags %}           {# 点赞自定义模板标签 #}
+
+{% block title %}
+    {{ Blog.title }}
+{% endblock %}
+
+{% block external %}
+    <link rel="stylesheet" href="{% static 'CSS/blog_detail.css' %}" >
+    <link rel="stylesheet" href="{% static 'CSS/login.css' %}" >
+    {# 引入富文本"prism"插件JS、CSS文件 #}
+    <script src="{% static 'ckeditor/ckeditor/plugins/prism/lib/prism/prism_patched.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'CSS/prism.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="blog_detali_content">
+        <div class="blog_content">
+            <div class="blog_detail_title">
+                <h1 style="text-align:center; color:red">
+                    {{ Blog.title }}
+                </h1>
+            </div>
+            <div class="blog_detail_top">
+                <span>作者: {{ Blog.author.get_nickName }}</span>
+                <span>类型: <a href="{% url 'blog_type' Blog.blog_type.pk %}" >{{ Blog.blog_type.type }}</a></span>
+                <span>发布时间: {{ Blog.creation_time|date:"Y-m-d H:i:s" }}</span>
+                <span>阅读: {{ Blog.get_read_num }}</span>
+                <span>评论数: （{% get_blog_comment Blog %}）</span>
+            </div>
+            <div class="blog_detail_text">
+                <p>{{ Blog.content|safe }}</p>
+            </div>
+            {# 注意: 这个自定义的模板标签返回值在模板中会被认为是变量，所以必须套引号 #}
+            <div class="like_content" onclick="likeChange(this, '{% get_content_type Blog %}', {{ Blog.pk }})">
+                <span class="like_img {% add_like Blog %}"></span>
+                <span class="like_count" style="color: cornflowerblue;">{% get_like_count Blog %}</span>
+            </div>
+            <div>
+                <p>上一篇：
+                    {% if previous_page %}
+                        <a href="{% url 'blog_detail' previous_page.pk %}">{{ previous_page.title }}</a>
+                    {% else %}
+                        <span>没有了</span>
+                    {% endif %}
+                </p>
+                <p>下一篇：
+                    {% if next_page %}
+                        <a href="{% url 'blog_detail' next_page.pk %}">{{ next_page.title }}</a>
+                    {% else %}
+                        <span>没有了</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    <!----------------------------------------------------评论-------------------------------------------------------->
+        <div class="bottom_comment_container">
+            <div class="write_comments">
+                <h2>提交评论</h2>
+                {% if request.user.is_authenticated %}
+                    {{ user.get_nickName }}欢迎评论~~
+                    <div class="reply_user" style="display: none;">
+                        <span>回复:</span>
+                        <p class="reply_username"></p>
+                    </div>
+                    <form action="{% url 'update_comment' %}" method="POST" class="update_comment">
+                        {% csrf_token %}
+                        {% form_comment Blog as form_comments %}
+                        {% for form_comment in form_comments %}
+                            {{ form_comment }}
+                        {% endfor %}
+                        <p id="comment_error" style="color: red; "></p>
+                        <input class="submit_comment" type="submit" value="提交评论" />
+                    </form>
+
+                {% else %}
+                    <p>请登陆后评论
+                        <a href="{% url 'user_login' %}?from={{ request.get_full_path }}">登录</a>
+                        <a href="{% url 'register' %}?from={{ request.get_full_path }}">注册</a>
+                    </p>
+                {% endif %}
+            </div>
+            <div class="list_comment">
+                <h2>评论列表</h2>
+                <div class="comment_reply_content">
+                    {% get_comment Blog as comments %}
+                    {% for comment in comments %}
+                        <ul id="root_{{ comment.pk }}" class="comment_ul">
+                            <li class="comment_reply_relative">
+                                <a href="javascript:;">{{ comment.user.get_nickName }}</a>
+                                <span>（{{ comment.comment_time|date:"Y-m-d H:i:s" }}）</span>
+                                <a href="javascript: reply({{ comment.pk }})">回复</a>
+                                <p class="comment_text" id="comment_{{ comment.pk }}">{{ comment.text|safe }}</p>
+                                <div class="like_content" onclick="likeChange(this, '{% get_content_type comment %}', {{ comment.pk }})">
+                                    <span class="like_img {% add_like comment %}"></span>
+                                    <span class="like_count" style="color: cornflowerblue;">{% get_like_count comment %}</span>
+                                </div>
+                            </li>
+                            {% for parent in comment.root_comment.all %}
+                                <li class="comment_reply comment_reply_relative">
+                                    <a href="javascript:;">{{ parent.user.get_nickName }}</a>
+                                    <span class="parent_user">回复@{{ parent.reply_to.get_nickName }}:</span>
+                                    <a href="javascript: reply({{ parent.pk }})">回复</a>
+                                    <p id="comment_{{ parent.pk }}">{{ parent.text|safe }}</p>
+                                    <div class="like_content" onclick="likeChange(this, '{% get_content_type parent %}', {{ parent.pk }})">
+                                        <span class="like_img {% add_like parent %}"></span>
+                                        <span class="like_count" style="color: cornflowerblue;">{% get_like_count parent %}</span>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% empty %}
+                        <span class="no_comment">暂无评论</span>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="login_container">
+                <p class="login_title">
+                    <span>登录</span>
+                </p>
+                <div class="login_form">
+                    <form action="" method="POST" id="blog_login_form">
+                        {% csrf_token %}
+                        <div>
+                            {% for field in LoginForm %}
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field }}
+                            {% endfor %}
+                            <p class="login_error"></p>
+                            <div class="Operating_button">
+                                <a href="{% url 'forget_Password' %}" class="forget_Password">忘记密码?</a>
+                                <button type="submit" class="login_submit">登录</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script_extends %}
+	<script>
+        function reply(reply_comment_id){                                   		// 通过点击<a>标签调用，将评论对象id或者回复对象id以实参的形式传过来
+		    $('#reply_comment_id').val(reply_comment_id);							// 将表单值设置为顶级评论对象/回复评论对象的主键（方便后台获取评论对象）
+		    var text = $('#comment_' + reply_comment_id).text();            		// 动态获取评论内容或回复内容
+            $('.reply_username').text(text);										// 将获取的评论内容或回复内容添加到指定元素
+            $('.reply_user').show();												// 显示元素
+            {% if user.is_authenticated %}
+                var a = $('#id_text').offset().top
+                console.log(a)
+                //设置滚动条滚动到输入框位置
+                $('html,body').animate({scrollTop: $('.write_comments').offset().top},300,function(){      
+                    $('#id_text').focus();
+                });
+            {% else %}
+                window.location.href = "{% url 'user_login' %}?from={{ request.get_full_path }}";
+            {% endif %}
+        }
+
+        // 将时间格式化为01这种格式
+        function numFormat(t){
+            return ('00'+ t ).substr(-2)
+        }
+        // 自定义时间格式
+        function timeFormat(timestamp){
+            var datetime = new Date(timestamp*1000);        // Django的.timestamp()方法获取的时间戳单位是里秒，而JS中时间戳单位是毫秒，所以需要X1000转换为毫秒。
+            var year = datetime.getFullYear();
+            var month = numFormat(datetime.getMonth()+1);
+            var day = numFormat(datetime.getDate());
+            var hour = numFormat(datetime.getHours());
+            var minute = numFormat(datetime.getMinutes());
+            var second = numFormat(datetime.getSeconds());
+            return year + '-' + month + '-' + day + '  ' + hour + ':' + minute + ':' + second
+        }
+        // 向字符串原型中添加方法
+        String.prototype.format = function(){
+            var str = this;
+            for (var i=0; i<arguments.length; i++){
+                str = str.replace(new RegExp("\\{"+ i +"\\}", "g"), arguments[i])
+            }
+            return str
+        };
+
+        // 动态添加评论
+		$('.update_comment').submit(function(){
+			// 清除报错（每触发一次表单提交清除一次报错信息）
+			$('#comment_error').text('');
+
+			$.ajax({
+                type: "POST",							    // 请求方式（向服务器发送的请求请求方式）
+                url: "{% url 'update_comment' %}",		    // url路由（发送到服务器的地址）
+                data: $(this).serialize(),				    // 序列化form表单数据（向服务器发送请求数据，因为请求方式为POST所以后台需要通过request.POST获取）
+                cache: false,							    // 不从浏览器缓存中获取请求信息.
+                success: function(data){				    // 当请求成功时执行的回调函数，"data"形参接收后台的响应数据
+                    console.log(data);					    // 输出从后台返回的响应数据
+                    if(data['status'] == 'SUCCESS'){
+                        // 通过该表单的值判断是评论还是回复
+                        if($('#reply_comment_id').val() == '0'){                      
+                            var comment_html = "<ul id=\"root_{0}\" class=\"comment_ul\">\n" +
+                                               "     <li class=\"comment_reply_relative\">\n" +
+                                               "         <a href=\"javascript:;\">{1}</a>\n" +
+                                               "         <span>（{2}）</span>\n" +
+                                               "         <a href=\"javascript: reply({0})\">回复</a>\n" +
+                                               "         <p class=\"comment_text\" id=\"comment_{0}\">{3}</p>\n" +
+                                               "         <div class=\"like_content\" onclick=\"likeChange(this, \'{4}\', {0})\">\n" +
+                                               "             <span class=\"like_img\"></span>\n" +
+                                               "             <span class=\"like_count\" style=\"color: cornflowerblue;\">0</span>\n" +
+                                               "         </div>\n" +
+                                               "     </li>\n" +
+                                               "</ul>";
+                            comment_html = comment_html.format(data['pk'], data['username'], timeFormat(data['comment_time']), data['text'], data['content_type']);
+                            $('.comment_reply_content').prepend(comment_html);
+                        }else{
+                            // 判断表单值，如果不为0则动态添加回复评论
+                            var reply_html = "<li class=\"comment_reply comment_reply_relative\">\n" +
+                                             "       <a href=\"javascript:;\">{0}</a>\n" +
+                                             "       <span class=\"parent_user\">回复@{1}:</span>\n" +
+                                             "       <a href=\"javascript: reply({2})\">回复</a>\n" +
+                                             "       <p id=\"comment_{2}\">{3}</p>\n" +
+                                             "       <div class=\"like_content\" onclick=\"likeChange(this, \'{4}\', {2})\">\n" +
+                                             "           <span class=\"like_img\"></span>\n" +
+                                             "           <span class=\"like_count\" style=\"color: cornflowerblue;\">0</span>\n" +
+                                             "       </div>\n" +
+                                             "   </li>";
+                            reply_html = reply_html.format(data['username'], data['reply_to'], data['pk'], data['text'], data['content_type']);
+                            $('#root_'+ data['root_pk']).append(reply_html);
+                        }
+                        // 设置滚动条滚动到刚刚评论的位置
+                        $('html,body').animate({scrollTop: $('#comment_'+ data['pk']).offset().top - innerHeight/2}, 500);
+                        // 清空评论框内容
+                        document.getElementById('id_text').value = '';				                       
+                        $('.reply_user').hide();											// 隐藏
+                        $('#reply_comment_id').val('0');									// 设置表单值0
+                        $('.no_comment').remove()											// 删除"暂无评论"
+                    }else{
+                    	$('#comment_error').text(data['message']);	                        // 接收服务器发送的错误响应
+                    }
+                },
+                error: function (xhr) {
+                    console.log(xhr)
+                }
+            });
+            // 取消默认行为(阻止提交表单、刷新页面)
+			return false;
+		});
+		
+		// 点赞函数
+        function likeChange(node, content_type, object_id){
+            var is_like =  node.getElementsByClassName('like_img2').length == 0;           // 获取node节点下指定class节点对象，获取其数组长度，再判断是否==0从而得知是否已点赞
+            $.ajax({
+                url: "{% url 'like_change' %}",             // 设置发送请求路由
+                type: 'GET',                                // get请求方式
+                data: {                                     // 发送请求数据
+                    content_type: content_type,				// 将被点赞对象模型类发送到后台
+                    object_id: object_id,					// 将被点赞对象实例发送到后台
+                    is_like: is_like                        // true表示未点赞，false表示已点赞
+                },
+                cache:false,                                // 不使用缓存
+                success: function(data){
+                    console.log(data);
+                    if (data['status'] == '200'){
+                        var element = node.getElementsByClassName('like_img')[0];           // 获取点赞图标节点
+                        var like_count = node.getElementsByClassName('like_count')[0];      // 获取点赞总数节点
+                        // 更新点赞状态
+                        if (is_like){
+                            element.classList.add('like_img2');                            // 设置已点赞状态
+                        }else{
+                            element.classList.remove('like_img2');                         // 设置未点赞状态
+                        }
+                        like_count.innerText = data['like_count']                          // 跟新点赞总数
+
+                    }else if(data['status'] == '001'){
+                        $('.login_container').fadeIn(500);														{# 淡出显示登录框 #}
+                        document.body.insertAdjacentHTML('beforeEnd', "<div id='login_background'></div>");		{# 创建登录背景标签 #}
+                        var login_background = document.getElementById('login_background');						{# 获取创建的登录背景标签 #}
+                        var login = document.getElementsByClassName('login_container')[0];						{# 获取登录标签 #}
+
+                        login_background.style.width = document.body.clientWidth + "px";						{# 设置登录背景大小 #}
+                        login_background.style.height = document.body.clientHeight + "px";
+
+                        login.style.left = (document.documentElement.clientWidth/2) - login.offsetWidth/2 + "px";   {# 设置登录框水平剧中 #}
+                        login.style.top = (document.documentElement.clientHeight/2) - login.offsetHeight/2 + "px";
+
+                        window.onresize = function(){															    {# 当浏览器大小改变时重新获取并设置登录背景大小 #}
+                            login_background.style.width = document.body.clientWidth + "px";
+                            login.style.left = document.documentElement.clientWidth/2 - (login.offsetWidth/2) + "px";
+                        }
+                    }else if(data['status'] == '500'){
+                        // 错误
+                        alert(data['error']);
+                    }
+                },
+                error: function(xhr){
+                    console.log(xhr);
+                }
+            })
+        }
+		
+	</script>
+{% endblock %}

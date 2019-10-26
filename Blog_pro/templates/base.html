@@ -1,0 +1,108 @@
+{# 导入外部静态文件标签 #}
+{% load staticfiles %}
+{% load notifications_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}{% endblock %}</title>
+		<script src="{% static 'jQuery/jquery-3.3.1.min.js' %}"></script>
+        {% block external %}{% endblock %}
+        <link rel="stylesheet" href="{% static 'CSS/base.css' %}" >
+        <script src="{% static 'notifications/notify.js' %}" type="text/javascript"></script>
+    </head>
+
+    <body>
+        <div class="my_blog_base_top">
+            <ul class="my_blog_base_one_link">
+                <li class="log"><h1>个人博客网站</h1></li>
+                <li><a href="/">主页</a></li>
+                <li><a href="{% url 'blog_home' %}">博客</a></li>
+            </ul>
+            <ul class="my_blog_base_one_link_right">
+                {% if not user.is_authenticated %}
+                    <li><a href="{% url 'register' %}?from={{ request.get_full_path }}">注册</a></li>
+                    <li><a href="{% url 'user_login' %}?from={{ request.get_full_path }}">登陆</a></li>
+                {% else %}
+                    <li class="second_level_content">
+                        <a class="click_one" href="javascript:;">{{ user.username }}<span class="ajax_get_count"></span>&nbsp;&nbsp;&nbsp;</a>
+                        <ul class="second_level">
+                            <li><a href="{% url 'personal_data' %}?from={{ request.get_full_path }}">个人资料</a></li>
+                            <li><a href="{% url 'my_notifications' %}">消息<span class="ajax_get_count"></span></a></li>
+                            {% if user.is_staff or user.is_superuser %}
+                                <li><a href="{% url 'admin:index' %}">后台管理</a></li>
+                            {% endif %}
+                            <li><a href="{% url 'exit_login' %}?from={{ request.get_full_path }}">退出</a></li>
+                        </ul>
+                    </li>
+                {% endif %}
+                <li class="web_seaech">
+                    <form method="GET" action="{% url 'word_seaech' %}">
+                        <input class="seaech" type="text" name="word" placeholder="站内搜索">
+                        <button type="submit"></button>
+                    </form>     
+                </li>
+            </ul>
+        </div>
+		{% block content %}{% endblock %}
+
+		{% block script_extends %}{% endblock %}
+		<script>						
+			// 导航栏右侧标签移入移出事件;
+            $('.second_level_content').hover(function(){
+                $('.second_level').stop();
+                $('.second_level').slideToggle();
+            });
+
+        	// 弹出登陆框
+	        $('#blog_login_form').submit(function(){
+	            $.ajax({
+	                url: "{% url 'login_up' %}",
+	                type: "POST",
+	                data: $(this).serialize(),
+	                cache: false,
+	                error: function(xhr){
+	                    console.log(xhr)
+	                },
+	                success: function(data){
+	                    console.log(data);
+	                    if (data['status'] == "200"){
+	                        window.location.reload();		// 刷新网页
+	                    }else if(data['status'] == '500'){
+	                        $('.login_error').text(data['error'])
+	                    }
+	                }
+	            });
+	            return false;
+	        })
+            
+            // 判断url是否有锚点后缀
+            if(window.location.hash){
+                // 滚动到指定评论或回复位置
+                $('html,body').animate(
+                    {scrollTop: $(window.location.hash).offset().top - $(window).height()/2},
+                    500,
+                    // 清空url锚点后缀
+                    function(){
+                        window.location.hash='';
+                    }
+                )
+            }
+
+            // 自定义函数获取未读计数
+            function get_count(data){
+                console.log(data)
+                count = data['unread_count'];
+                if(count){
+                    // 显示隐藏
+                    $('.ajax_get_count').show();
+                    $('.ajax_get_count').text(count);
+                }
+            }
+		</script>
+
+        {# 每8秒执行一次自定义JS函数"get_count" #}
+        {% register_notify_callbacks refresh_period=8 callbacks='get_count' %}
+    </body>
+</html>

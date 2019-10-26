@@ -1,0 +1,24 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+a{
+    text-decoration: none;
+    color: #000;
+}
+
+/*-------------------------------------------------------------------------------*/
+.home_container a{
+    color: #1e90ff;
+}
+
+.home_container a:hover{
+    text-decoration: underline;
+}
+
+.welcome{
+    font-size: 200%;
+    text-align: center;
+    margin: 20px;
+}

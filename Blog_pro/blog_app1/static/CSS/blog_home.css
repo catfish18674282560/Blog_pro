@@ -1,0 +1,146 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+.blog_home_content{                             /* 总容器 */
+    padding: 20px 250px;
+    overflow: hidden;
+}
+
+/*-----------------------------------------------------------*/      /* 左侧所有博客 */
+.blog_home_content .blog_home_content_left{
+    width: 1000px;
+    float: left;
+    border: 2px rgba(217, 217, 217, 0.57) solid;
+}
+
+.blog_home_content_container{
+    margin: 0 20px 40px 20px;
+}
+
+/*大标题*/
+.blog_home_content_container a{
+    text-decoration: none;
+}
+
+.blog_home_content_container a h2{
+    display: inline-block;
+    color: dodgerblue;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+}
+
+/*正文*/
+.blog_home_content_container_text{
+    color: #6e6e6e;
+}
+
+.blog_home_content_container_text a{
+    color: #6e6e6e;
+}
+
+.blog_home_content_container_text a:hover{
+    text-decoration: underline;
+}
+
+.blog_home_content_container_text p{
+    letter-spacing: 0.05em;
+    padding-bottom: 40px;
+    padding-top: 0.5em;
+    border-bottom: 2px rgba(217, 217, 217, 0.57) solid;
+}
+
+.blog_home_content_container_text:last-child p{
+    padding-bottom: 0;
+    border: none;
+}
+
+/*----------------------------博客分类--------------------------------*/       /* 右所有博客类型 */
+.blog_home_content_right{
+    width: 300px;
+    float: right;
+    border: 2px rgba(217, 217, 217, 0.57) solid;
+}
+
+.blog_home_content_title{
+	padding-left: 20px;
+	line-height: 40px;
+	background: rgba(217, 217, 217, 0.57);
+}
+
+.blog_home_content_right_ul{
+    list-style: none;
+    padding: 25px 20px;
+}
+
+.blog_home_content_right_ul li:not(last-child){
+	margin-bottom: 0.3em;
+}
+
+.blog_home_content_right_ul a{
+    text-decoration: none;
+    color: dodgerblue;
+}
+
+/*--------------------------------------分页器--------------------------------------*/
+.my_blog_pag ul{
+	overflow: hidden;
+    margin-left: 50%;
+    list-style-type: none;
+    padding: 0;
+    border-style: solid;
+    border-width: 2px 0 2px 2px;
+    border-color: rgba(204, 204, 204, 0.71);
+    text-align: center;
+    user-select: none;				/* 文字不可选中 */
+}
+
+.my_blog_pag ul li{
+    float: left;
+    width: 40px;
+    height: 40px;
+    border-right-style: solid;
+    border-width: 2px;
+    border-color: rgba(204, 204, 204, 0.71);
+}
+
+.my_blog_pag ul li a{
+    display: block;                 /* 内联元素设置块元素，默认宽高会继承上一级盒子 */
+    text-decoration: none;
+    line-height: 40px;				/* 设置行高等于元素高度，达到垂直居中效果 */
+    color: #000;
+}
+
+/* 当前页、及省号设置 */
+.current_page{
+	line-height: 40px;
+	cursor: default;
+}
+
+/* 页码信息 */
+.blog_page_details{
+	cursor: default;
+	margin-top: 1em;;
+}
+
+.blog_page_details 	p{
+	text-align: center;
+	color: rgba(0, 0, 0, 0.5);
+}
+
+/*没有上一页或下一页触发*/
+.my_blog_pag ul li .no_page{
+    display: block;
+    line-height: 40px;
+}
+
+.my_blog_pag ul li:hover{
+    background: #ccc;
+}
+
+.my_blog_pag ul li .no_page:hover{
+    background: none;
+    cursor: default;
+}
+

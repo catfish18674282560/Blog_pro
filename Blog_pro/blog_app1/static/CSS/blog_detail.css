@@ -1,0 +1,188 @@
+*{
+	list-style-type: none;
+}
+a{
+	text-decoration: none;
+	color: #000;
+}
+
+/*--------------------------------------------总容器------------------------------------------------------------------*/
+.blog_detali_content a{
+	color: #1e90ff;
+}
+
+.blog_content{
+	margin: 0 10%;
+}
+
+.login_form .inputs{						/* 表单中所有<input>标签 */
+	width: 100%;
+	height: 2.5em;
+	border-radius: 6px;
+	box-sizing: border-box;
+}
+
+.login_form label{							/* 表单中所有<lable>标签 */
+	display: block;
+	margin-top: 6px;
+	margin-bottom: 6px;
+}
+
+.login_form .login_submit{
+	color: whitesmoke;
+	font-weight: bold;
+	padding: 0.5em 0.8em;
+	background: #1E90FF;
+	border-radius: 6px;
+	margin-top: 1em;
+	float: right;
+}
+
+.login_form .login_error{
+	color: red;
+	font-size: 0.9em;
+	font-weight: normal;
+}
+
+#id_text{
+	width: 100%;
+	height: 5em;
+}
+
+/*----------------------------------------------------博客内容--------------------------------------*/
+.blog_detail_title{
+	padding: 1em 0;
+}
+
+/* 正文 */
+.blog_detail_text{
+    font: 20px/1.5 微软雅黑;
+    margin: 18px 0;
+}
+
+/*文章信息*/
+.blog_detail_top{
+	font-size: 1em;
+    color: #a1a1a1;
+    margin-left: 10%;
+}
+
+
+.like_content{
+	display: inline-block;
+	margin-bottom: 10px;
+}
+/* 未点赞 */
+.like_img{
+	width: 2em;
+	height: 2em;
+	background: url('../img/点赞.png');
+	background-size: contain;
+	display: inline-block;
+	vertical-align: sub;
+	cursor: pointer;
+}
+/* 已点赞 */
+.like_img2{
+	width: 2em;
+	height: 2em;
+	background: url('../img/点赞2.png');
+	background-size: contain;
+	display: inline-block;
+	vertical-align: sub;
+	cursor: pointer;
+}
+
+/*-------------------------------------------评论区-------------------------------------------------*/
+.bottom_comment_container{
+	width: 80%;
+	font-size: 1em;
+	margin: 0 auto;
+	color: #595959;
+}
+
+.bottom_comment_container .a_use{					/* 用户名超链接 */
+	color: #595959;
+	text-decoration: none;
+}
+
+.bottom_comment_container h2{
+	font-size: 1.5em;
+	color: #1E90FF;
+	padding-top: 2em;
+	padding-bottom: 0.4em;
+	margin-bottom: 1em;
+	border-bottom: 2px solid #ccc;
+}
+
+.write_comments .update_comment .update_text{
+	width: 100%;
+	height: 5em;
+	resize: vertical;
+}
+
+.comment_reply_content{
+	font-size: 0.8em;
+	color: #363636;
+}
+
+/* 评论区点赞标签父级标签开启相对定位  */
+.comment_reply_relative{
+	position: relative;
+}
+/* 评论区，点赞标签开启绝对定位 */
+.comment_reply_content .like_content{
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+
+.comment_ul{
+	margin-top: 0.5em;
+	border-bottom: 1px solid #dedede;
+}
+
+.user_details:hover{
+	color: rgba(97, 97, 97, 0.54);
+}
+
+/* 评论内容 */
+.comment_text{							
+	margin-top: 0.5em;
+	margin-bottom: 0.8em;
+}
+
+/*------------------------------------------回复------------------------------------*/
+.comment_reply{							/* 回复容器 */
+	font-size: 0.8em;
+	margin-left: 2em;
+	text-indent: 0.5em;
+	border-left: 3px #b1b1b1 solid;
+	margin-bottom: 1em;
+}
+
+.parents .parent_user{						/* 被回复用户 */
+	color: #989898;
+	padding-right: 0.5em;
+}
+
+
+/*-------------------------------------------弹出登录框------------------------------*/
+#login_background{								/* 弹出登录框后背景颜色 */
+	position: absolute
+	left: 0;
+	top: 0;
+	background: #000;
+	z-index: 10;								/* 优先级 */
+	opacity: 0.5;
+}
+
+.login_container{								/* 登录框 */
+	display: none;
+	background: white;
+	margin: 0 auto !important;
+	position: fixed;
+	left: 0;
+	top: 0;
+	z-index: 20; 								/* 优先级 */
+}

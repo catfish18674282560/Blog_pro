@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block external %}
+    <link rel="stylesheet" href="{% static 'CSS/login.css' %}" >
+{% endblock %}
+
+{% block content %}
+    <div class="login_container">
+    	<p class="login_title">
+    		<span>{{ title }}</span>
+    	</p>
+        <div class="login_form">
+            <form action="" method="POST">
+                {% csrf_token %}
+                <div>
+                    {% for field in form %}
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        <p>{{ field.errors.0 }}</p>
+                    {% endfor %}
+                    <p>{{ form.non_field_errors.0 }}</p>
+                    <div class="Operating_button">
+                        <button type="submit" class="login_submit">{{ button_str }}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
+
